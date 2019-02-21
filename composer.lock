@@ -4,8 +4,61 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a06c8bafebec7a832fd41e4cda6db592",
+    "content-hash": "06480e09358cc5cc5f84f37ba26433df",
     "packages": [
+        {
+            "name": "aura/sql",
+            "version": "3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/auraphp/Aura.Sql.git",
+                "reference": "2be02d5dfd9fdee6df199de1a19572aa490bb744"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/auraphp/Aura.Sql/zipball/2be02d5dfd9fdee6df199de1a19572aa490bb744",
+                "reference": "2be02d5dfd9fdee6df199de1a19572aa490bb744",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.6.0",
+                "psr/log": "^1.0"
+            },
+            "require-dev": {
+                "pds/skeleton": "~1.0",
+                "phpunit/phpunit": "~5.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Aura\\Sql\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Aura.Sql Contributors",
+                    "homepage": "https://github.com/auraphp/Aura.Sql/contributors"
+                }
+            ],
+            "description": "A PDO extension that provides lazy connections, array quoting, query profiling, value binding, and convenience methods for common fetch styles. Because it extends PDO, existing code that uses PDO can use this without any changes to the existing code.",
+            "homepage": "https://github.com/auraphp/Aura.Sql",
+            "keywords": [
+                "mysql",
+                "pdo",
+                "pgsql",
+                "postgres",
+                "postgresql",
+                "sql server",
+                "sqlite",
+                "sqlserver",
+                "sqlsrv"
+            ],
+            "time": "2018-06-11T12:57:42+00:00"
+        },
         {
             "name": "doctrine/annotations",
             "version": "v1.6.0",
@@ -2102,6 +2155,85 @@
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
             "time": "2019-01-16T20:35:37+00:00"
+        },
+        {
+            "name": "vcn/symfony-autofactory",
+            "version": "v0.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/vcn/symfony-autofactory.git",
+                "reference": "2a72d24ac820a8a2743e890c766267a4e146ff85"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vcn/symfony-autofactory/zipball/2a72d24ac820a8a2743e890c766267a4e146ff85",
+                "reference": "2a72d24ac820a8a2743e890c766267a4e146ff85",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/annotations": "^1.6",
+                "ext-mbstring": "*",
+                "php": ">=7.1",
+                "symfony/dependency-injection": "^4.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Vcn\\Symfony\\AutoFactory\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Gerrit Drost",
+                    "email": "gdrost@vcn.nl"
+                }
+            ],
+            "description": "Library that makes it possible to automatically register factory classes in the Symfony Service Container",
+            "time": "2019-02-15T15:52:55+00:00"
+        },
+        {
+            "name": "vcn/symfony-autofactory-bundle",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/vcn/symfony-autofactory-bundle.git",
+                "reference": "6c505e018591a2eb5a55a1dc0bfc540fc855baf6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vcn/symfony-autofactory-bundle/zipball/6c505e018591a2eb5a55a1dc0bfc540fc855baf6",
+                "reference": "6c505e018591a2eb5a55a1dc0bfc540fc855baf6",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/annotations": "^1.6",
+                "php": ">=7.1",
+                "symfony/dependency-injection": "^4.2",
+                "symfony/http-kernel": "^4.2",
+                "vcn/symfony-autofactory": "^0.1.0"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-4": {
+                    "Vcn\\Symfony\\AutoFactory\\Bundle\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Gerrit Drost",
+                    "email": "gdrost@vcn.nl"
+                }
+            ],
+            "description": "Bundle for vcn/symfony-autofactory",
+            "time": "2019-01-18T13:55:24+00:00"
         }
     ],
     "packages-dev": [
