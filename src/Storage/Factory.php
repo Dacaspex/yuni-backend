@@ -8,11 +8,10 @@ class Factory implements AutoFactory
 {
     public static function getStorage(): Storage
     {
-        // TODO: Extract this information from a config file or environment file
         return new Storage(
-            'mysql:host=localhost;dbname=yuni',
-            'yuni_dev',
-            'test123'
+            getenv('DB_DSN'),
+            getenv('DB_USER'),
+            getenv('DB_PASS')
         );
     }
 }
