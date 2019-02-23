@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0405a0e65684dbc1b2ee0ef451ea8047",
+    "content-hash": "9134f9c3f7fda17bb4ef3dbf203ab6da",
     "packages": [
         {
             "name": "aura/sql",
@@ -2098,6 +2098,40 @@
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
             "time": "2019-01-16T20:35:37+00:00"
+        },
+        {
+            "name": "vcn/enum",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/vcn/enum.git",
+                "reference": "b66d09b7f4fb88fcbf9e539a1250166d3c644c93"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vcn/enum/zipball/b66d09b7f4fb88fcbf9e539a1250166d3c644c93",
+                "reference": "b66d09b7f4fb88fcbf9e539a1250166d3c644c93",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": "^5.4 || ^7.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Vcn\\Lib\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Enumeration data types with pattern match operations.",
+            "time": "2018-10-05T14:29:30+00:00"
         },
         {
             "name": "vcn/symfony-autofactory",

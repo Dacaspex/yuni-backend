@@ -12,7 +12,6 @@ class CanteenService
     private $storage;
 
     /**
-     * CanteenService constructor.
      * @param Storage $storage
      */
     public function __construct(Storage $storage)

@@ -5,15 +5,17 @@
         "php": "^7.1.3",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "ext-pdo": "*",
         "aura/sql": "^3.0",
         "sensio/framework-extra-bundle": "^5.2",
         "symfony/console": "4.2.*",
         "symfony/flex": "^1.1",
         "symfony/framework-bundle": "4.2.*",
         "symfony/yaml": "4.2.*",
+        "vcn/enum": "^1.0",
         "vcn/symfony-autofactory": "^0.1.1",
         "vcn/symfony-autofactory-bundle": "^0.1.0",
-      "ext-pdo": "*"
+      "ext-json": "*"
     },
     "config": {
         "preferred-install": {
