@@ -17,5 +17,8 @@ class TokenValidator
         $this->tokens = $tokens;
     }
 
-    public function check(Request)
+    public function check(string $token): bool
+    {
+        return in_array($token, $this->tokens);
+    }
 }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9134f9c3f7fda17bb4ef3dbf203ab6da",
+    "content-hash": "ddc5ff8dde022b709aa40dcc10c0c891",
     "packages": [
         {
             "name": "aura/sql",
@@ -2134,6 +2134,52 @@
             "time": "2018-10-05T14:29:30+00:00"
         },
         {
+            "name": "vcn/pipette",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/vcn/pipette.git",
+                "reference": "86c4cf38335dd9ab3c92ead3f97dd5ac994a7f65"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vcn/pipette/zipball/86c4cf38335dd9ab3c92ead3f97dd5ac994a7f65",
+                "reference": "86c4cf38335dd9ab3c92ead3f97dd5ac994a7f65",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": "^7.1"
+            },
+            "require-dev": {
+                "leanphp/phpspec-code-coverage": "^4.2",
+                "phpspec/phpspec": "^4.3",
+                "phpunit/phpunit": "^7.1",
+                "vcn/enum": "^1.0"
+            },
+            "suggest": {
+                "vcn/enum": "To extract Vcn\\Lib\\Enum values."
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Vcn\\Pipette\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Robert Versteegt",
+                    "email": "rversteegt@vcn.nl"
+                }
+            ],
+            "description": "Easily extract what you need out of JSON.",
+            "time": "2019-01-29T12:50:52+00:00"
+        },
+        {
             "name": "vcn/symfony-autofactory",
             "version": "v0.1.1",
             "source": {
@@ -2389,6 +2435,7 @@
         "php": "^7.1.3",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "ext-json": "*",
         "ext-pdo": "*"
     },
     "platform-dev": []

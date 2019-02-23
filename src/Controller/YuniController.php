@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Auth\TokenValidator;
 use App\Service\CanteenService;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,6 +17,16 @@ class YuniController
     public function test(): Response
     {
         return new JsonResponse(['message' => 'Hello World!']);
+    }
+
+    /**
+     * @param string $token
+     * @param TokenValidator $validator
+     * @return Response
+     * @Route("/auth/{token}")
+     */
+    public function testAuth(string $token, TokenValidator $validator): Response
+    {
     }
 
     /**

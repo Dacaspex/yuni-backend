@@ -149,6 +149,9 @@
     "vcn/enum": {
         "version": "v1.0.0"
     },
+    "vcn/pipette": {
+        "version": "v1.1.0"
+    },
     "vcn/symfony-autofactory": {
         "version": "v0.1.1"
     },

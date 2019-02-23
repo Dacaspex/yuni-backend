@@ -28,3 +28,6 @@ services:
 
   App\Storage\Factory:
     class: 'App\Storage\Factory'
+
+  App\Auth\Factory:
+    class: 'App\Auth\Factory'
