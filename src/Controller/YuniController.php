@@ -29,4 +29,14 @@ class YuniController
 
         return new JsonResponse($canteens);
     }
+
+    /**
+     * @param CanteenService $service
+     * @return Response
+     * @Route("/menu_items")
+     */
+    public function getAllMenuItems(CanteenService $service): Response
+    {
+        return new JsonResponse($service->getAllMenuItems());
+    }
 }

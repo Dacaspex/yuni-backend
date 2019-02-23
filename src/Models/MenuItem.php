@@ -9,50 +9,36 @@ class MenuItem implements JsonSerializable
     /**
      * @var int
      */
-    private $id;
-    /**
-     * @var int
-     */
-    private $globalId;
+    protected $id;
     /**
      * @var string
      */
-    private $name;
+    protected $name;
     /**
      * @var string
      */
-    private $description;
+    protected $description;
     /**
-     * @var string
+     * @var Category
      */
-    private $category;
-    /**
-     * @var Schedule
-     */
-    private $schedule;
+    protected $category;
 
     /**
-     * MenuItem constructor.
      * @param int $id
-     * @param int $globalId
      * @param string $name
      * @param string $description
-     * @param Schedule $schedule
+     * @param Category $category
      */
     public function __construct(
         int $id,
-        int $globalId,
         string $name,
         string $description,
-        string $category,
-        Schedule $schedule
+        Category $category
     ) {
         $this->id          = $id;
-        $this->globalId    = $globalId;
         $this->name        = $name;
         $this->description = $description;
         $this->category    = $category;
-        $this->schedule    = $schedule;
     }
 
     /**
@@ -62,11 +48,9 @@ class MenuItem implements JsonSerializable
     {
         return [
             'id'          => $this->id,
-            'global_id'   => $this->globalId,
             'name'        => $this->name,
             'description' => $this->description,
-            'category'    => $this->category,
-            'schedule'    => $this->schedule,
+            'category'    => $this->category->getName(),
         ];
     }
 }

@@ -3,12 +3,15 @@
 namespace App\Storage;
 
 use App\Models\Canteen;
+use App\Models\Category;
+use App\Models\ExtendedMenuItem;
 use App\Models\MenuItem;
 use App\Models\OperatingTimes;
 use App\Models\Schedule;
 use Aura\Sql\ExtendedPdo;
 use PDO;
 use PDOException;
+use Vcn\Lib\Enum\Exception\InvalidInstance;
 
 class Storage
 {
@@ -90,17 +93,15 @@ class Storage
             $statement = $this->pdo->prepare(
                 "
                     SELECT 
-                      item.id AS global_id, 
-                      map.id, 
+                      item.id, 
+                      map.id AS menu_id, 
                       item.name, 
                       item.description,
-                      category.name AS category,
+                      category,
                       map.schedule
                     FROM map_canteen_menu_item AS map
                     LEFT JOIN menu_items AS item
                     ON map.menu_item_id = item.id
-                    LEFT JOIN menu_item_categories AS category
-                    ON item.category_id = category.id
                     WHERE map.canteen_id = :canteenId
                 "
             );
@@ -109,18 +110,18 @@ class Storage
 
             $menuItems = [];
             while (($record = $statement->fetch(PDO::FETCH_ASSOC)) !== false) {
-                $menuItems[] = new MenuItem(
+                $menuItems[] = new ExtendedMenuItem(
                     $record['id'],
-                    $record['global_id'],
                     $record['name'],
                     $record['description'],
-                    $record['category'],
+                    Category::byName($record['category']),
+                    $record['menu_id'],
                     Schedule::fromDatabase($record['schedule'])
                 );
             }
 
             return $menuItems;
-        } catch (PDOException $e) {
+        } catch (PDOException | InvalidInstance $e) {
             // TODO
             throw new \RuntimeException($e->getMessage(), $e);
         }
@@ -129,15 +130,25 @@ class Storage
     public function getAllMenuItems(): array
     {
         try {
-            $results = $this->pdo->query(
+            $statement = $this->pdo->query(
                 "
-                    SELECT item. id, item.name, description, category.name AS category 
-                    FROM menu_items AS item
-                    LEFT JOIN menu_item_categories AS category
-                    ON item.category_id = category.id
+                    SELECT id, name, description, category 
+                    FROM menu_items
                 "
             );
-        } catch (PDOException $e) {
+
+            $menuItems = [];
+            while (($record = $statement->fetch(PDO::FETCH_ASSOC)) !== false) {
+                $menuItems[] = new MenuItem(
+                    $record['id'],
+                    $record['name'],
+                    $record['description'],
+                    Category::byName($record['category'])
+                );
+            }
+
+            return $menuItems;
+        } catch (PDOException | InvalidInstance $e) {
             // TODO
             throw new \RuntimeException($e->getMessage(), $e);
         }

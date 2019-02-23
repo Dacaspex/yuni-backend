@@ -19,8 +19,19 @@ class CanteenService
         $this->storage = $storage;
     }
 
+    /**
+     * @return array
+     */
     public function getCanteens(): array
     {
         return $this->storage->getCanteens();
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllMenuItems(): array
+    {
+        return $this->storage->getAllMenuItems();
     }
 }
