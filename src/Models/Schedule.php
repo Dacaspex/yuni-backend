@@ -19,7 +19,7 @@ class Schedule implements JsonSerializable
         $this->data = $data;
     }
 
-    public static function fromDatabase(string $data): Schedule
+    public static function fromString(string $data): Schedule
     {
         if (strlen($data) !== 7) {
             throw new \InvalidArgumentException('Schedule string is not 7 characters long');

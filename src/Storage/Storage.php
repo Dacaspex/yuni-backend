@@ -116,7 +116,7 @@ class Storage
                     $record['description'],
                     Category::byName($record['category']),
                     $record['menu_id'],
-                    Schedule::fromDatabase($record['schedule'])
+                    Schedule::fromString($record['schedule'])
                 );
             }
 
