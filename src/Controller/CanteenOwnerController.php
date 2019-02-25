@@ -21,7 +21,7 @@ class CanteenOwnerController
      * @param TokenValidator $tokenValidator
      * @param CanteenOwnerService $service
      * @return Response
-     * @Route("/add_menu_item_to_menu/{token}/")
+     * @Route("/api/{token}/add_menu_item_to_menu")
      */
     public function addMenuItemToMenu(
         Request $request,
@@ -40,7 +40,7 @@ class CanteenOwnerController
 
             $canteenId  = $json->field('canteen_id')->int();
             $menuItemId = $json->field('menu_item_id')->int();
-            $schedule   = Schedule::fromString($json->field('schedule')->string());
+            $schedule   = Schedule::fromBitMask($json->field('schedule')->string());
 
             $service->addMenuItemToMenu($canteenId, $menuItemId, $schedule);
         } catch (CantDecode | AssertionFailed $e) {
@@ -55,7 +55,7 @@ class CanteenOwnerController
                 'message' => 'The supplied token is not valid'
             ],
             403
-        )
+        );
     }
 
     private function handleParseException(CantDecode $e): Response

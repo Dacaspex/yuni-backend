@@ -19,13 +19,25 @@ class Schedule implements JsonSerializable
         $this->data = $data;
     }
 
-    public static function fromString(string $data): Schedule
+    /**
+     * @param string $data
+     * @return Schedule
+     */
+    public static function fromBitMask(string $data): Schedule
     {
         if (strlen($data) !== 7) {
             throw new \InvalidArgumentException('Schedule string is not 7 characters long');
         }
 
         return new Schedule($data);
+    }
+
+    /**
+     * @return string Bit mask representation of the schedule
+     */
+    public function toBitMask(): string
+    {
+        return $this->data;
     }
 
     /**
