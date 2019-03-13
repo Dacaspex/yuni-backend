@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Models\Canteen;
 use App\Storage\Storage;
 
 class CanteenService
@@ -17,6 +18,16 @@ class CanteenService
     public function __construct(Storage $storage)
     {
         $this->storage = $storage;
+    }
+
+    /**
+     * @param int $id
+     * @return Canteen
+     * @throws \App\Storage\Exception\NotFoundException
+     */
+    public function getCanteen(int $id): Canteen
+    {
+        return $this->storage->getCanteen($id);
     }
 
     /**

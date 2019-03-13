@@ -8,6 +8,7 @@ use App\Models\ExtendedMenuItem;
 use App\Models\MenuItem;
 use App\Models\OperatingTimes;
 use App\Models\Schedule;
+use App\Storage\Exception\NotFoundException;
 use Aura\Sql\ExtendedPdo;
 use PDO;
 use PDOException;
@@ -15,8 +16,16 @@ use Vcn\Lib\Enum\Exception\InvalidInstance;
 
 class Storage
 {
+    /**
+     * @var ExtendedPdo
+     */
     protected $pdo;
 
+    /**
+     * @param string $dsn
+     * @param string $username
+     * @param string $password
+     */
     public function __construct(string $dsn, string $username, string $password)
     {
         $this->pdo = new ExtendedPdo($dsn, $username, $password);
@@ -27,40 +36,42 @@ class Storage
     //
 
     /**
-     * @return Canteen[]
+     * @param int $id
+     * @return Canteen
+     * @throws NotFoundException
      */
-    public function getCanteens(): array
+    public function getCanteen(int $id): Canteen
     {
         try {
-            $query = $this->pdo->query(
+            $statement = $this->pdo->prepare(
                 "
-                    SELECT id, name, description, building, longitude, latitude
+                    SELECT id, name, description, building, longitude, lattitude
                     FROM canteens
+                    WHERE id = :id
                 "
             );
+            $statement->bindValue(':id', $id, PDO::PARAM_INT);
+            $statement->execute();
 
-            $canteens = [];
-            while (($record = $query->fetch(PDO::FETCH_ASSOC)) !== false) {
-                // Get operating times and menu items
-                $operatingTimes = $this->getOperatingTimes($record['id']);
-                $menuItems      = $this->getMenuItems($record['id']);
-
-                $canteens[] = new Canteen(
-                    $record['id'],
-                    $record['name'],
-                    $record['description'],
-                    $record['building'],
-                    $record['longitude'],
-                    $record['latitude'],
-                    $operatingTimes,
-                    $menuItems
-                );
+            $record = $statement->fetch(PDO::FETCH_ASSOC);
+            if ($record === false) {
+                throw new NotFoundException();
             }
 
-            return $canteens;
+            new Canteen(
+                $record['id'],
+                $record['name'],
+                $record['description'],
+                $record['building'],
+                $record['longitude'],
+                $record['latitude'],
+                $this->getOperatingTimes($id),
+                $this->getMenuItems($id)
+            );
+
         } catch (PDOException $e) {
             // TODO
-            throw new \RuntimeException($e->getMessage(), $e);
+            throw new \RuntimeException('Could not get canteen with id' . $id, 0, $e);
         }
     }
 
@@ -126,6 +137,44 @@ class Storage
 
             return $menuItems;
         } catch (PDOException | InvalidInstance $e) {
+            // TODO
+            throw new \RuntimeException($e->getMessage(), $e);
+        }
+    }
+
+    /**
+     * @return Canteen[]
+     */
+    public function getCanteens(): array
+    {
+        try {
+            $query = $this->pdo->query(
+                "
+                    SELECT id, name, description, building, longitude, latitude
+                    FROM canteens
+                "
+            );
+
+            $canteens = [];
+            while (($record = $query->fetch(PDO::FETCH_ASSOC)) !== false) {
+                // Get operating times and menu items
+                $operatingTimes = $this->getOperatingTimes($record['id']);
+                $menuItems      = $this->getMenuItems($record['id']);
+
+                $canteens[] = new Canteen(
+                    $record['id'],
+                    $record['name'],
+                    $record['description'],
+                    $record['building'],
+                    $record['longitude'],
+                    $record['latitude'],
+                    $operatingTimes,
+                    $menuItems
+                );
+            }
+
+            return $canteens;
+        } catch (PDOException $e) {
             // TODO
             throw new \RuntimeException($e->getMessage(), $e);
         }
@@ -276,6 +325,29 @@ class Storage
         } catch (PDOException $e) {
             // TODO
             throw new \RuntimeException($e->getMessage(), 0, $e);
+        }
+    }
+
+    //
+    // DELETE operations
+    //
+
+    /**
+     * @param int $menuId
+     */
+    public function removeItemFromMenu(int $menuId): void
+    {
+        try {
+            $statement = $this->pdo->prepare(
+                "
+                    DELETE FROM map_canteen_menu_item
+                    WHERE id = :id
+                "
+            );
+            $statement->bindValue(':id', $menuId, PDO::PARAM_INT);
+            $statement->execute();
+        } catch (PDOException $e) {
+            throw new \RuntimeException('Could not remove item from menu', 0, $e);
         }
     }
 }

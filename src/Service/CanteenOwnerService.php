@@ -20,8 +20,21 @@ class CanteenOwnerService
         $this->storage = $storage;
     }
 
+    /**
+     * @param int $canteenId
+     * @param int $menuItemId
+     * @param Schedule $schedule
+     */
     public function addMenuItemToMenu(int $canteenId, int $menuItemId, Schedule $schedule): void
     {
-        
+        $this->storage->addMenuItemToMenu($canteenId, $menuItemId, $schedule);
+    }
+
+    /**
+     * @param int $menuId
+     */
+    public function removeItemFromMenu(int $menuId): void
+    {
+        $this->storage->removeItemFromMenu($menuId);
     }
 }
