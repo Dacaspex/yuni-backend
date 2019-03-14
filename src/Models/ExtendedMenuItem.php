@@ -36,6 +36,22 @@ class ExtendedMenuItem extends MenuItem
     }
 
     /**
+     * @return int
+     */
+    public function getMenuId(): int
+    {
+        return $this->menuId;
+    }
+
+    /**
+     * @return Schedule
+     */
+    public function getSchedule(): Schedule
+    {
+        return $this->schedule;
+    }
+
+    /**
      * @inheritdoc
      */
     public function jsonSerialize()

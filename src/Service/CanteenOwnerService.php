@@ -27,11 +27,19 @@ class CanteenOwnerService
      */
     public function addMenuItemToMenu(int $canteenId, int $menuItemId, Schedule $schedule): void
     {
+        // Check if the menu item is not already on the menu of the canteen, of so, abort operation
+        foreach ($this->storage->getMenuItems($canteenId) as $item) {
+            if ($item->getId() === $menuItemId) {
+                return;
+            }
+        }
+
         $this->storage->addMenuItemToMenu($canteenId, $menuItemId, $schedule);
     }
 
     /**
      * @param int $menuId
+     * @throws \App\Storage\Exception\NotFoundException
      */
     public function removeItemFromMenu(int $menuId): void
     {

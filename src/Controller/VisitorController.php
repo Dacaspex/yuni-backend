@@ -40,10 +40,30 @@ class VisitorController
     /**
      * @param CanteenService $service
      * @return Response
-     * @Route("/api/all_menu_items")
+     * @Route("/api/menu/all")
      */
     public function getAllMenuItems(CanteenService $service): Response
     {
         return new JsonResponse($service->getAllMenuItems());
+    }
+
+    public function getMenuItemReviews(int $menuItemId): Response
+    {
+
+    }
+
+    public function getCanteenReviews(int $canteenId): Response
+    {
+
+    }
+
+    public function addMenuItemReview(int $menuItemReview, Request $request): Response
+    {
+
+    }
+
+    public function addCanteenReview(int $canteenId): Response
+    {
+
     }
 }

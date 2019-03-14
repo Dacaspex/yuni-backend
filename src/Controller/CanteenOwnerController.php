@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Auth\TokenValidator;
 use App\Models\Schedule;
 use App\Service\CanteenOwnerService;
+use App\Storage\Exception\NotFoundException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -98,26 +99,34 @@ class CanteenOwnerController
             return new JsonResponse();
         } catch (CantDecode | AssertionFailed $e) {
             return $this->handleParseException($e);
+        } catch (NotFoundException $e) {
+            return $this->handleNotFound($e);
         }
     }
 
+    /**
+     * @return Response
+     */
     private function handleUnAuthorised(): Response
     {
-        return new JsonResponse(
-            [
-                'message' => 'The supplied token is not valid'
-            ],
-            403
-        );
+        return new JsonResponse(null, Response::HTTP_UNAUTHORIZED);
     }
 
-    private function handleParseException(CantDecode $e): Response
+    /**
+     * @param \Exception $e
+     * @return Response
+     */
+    private function handleParseException(\Exception $e): Response
     {
-        return new JsonResponse(
-            [
-                'message' => 'Could not parse json'
-            ],
-            500
-        );
+        return new JsonResponse(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    /**
+     * @param \Exception $e
+     * @return Response
+     */
+    private function handleNotFound(\Exception $e): Response
+    {
+        return new JsonResponse(null, Response::HTTP_NOT_FOUND);
     }
 }

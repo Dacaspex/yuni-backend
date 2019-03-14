@@ -45,7 +45,7 @@ class Storage
         try {
             $statement = $this->pdo->prepare(
                 "
-                    SELECT id, name, description, building, longitude, lattitude
+                    SELECT id, name, description, building, longitude, latitude
                     FROM canteens
                     WHERE id = :id
                 "
@@ -58,7 +58,7 @@ class Storage
                 throw new NotFoundException();
             }
 
-            new Canteen(
+            return new Canteen(
                 $record['id'],
                 $record['name'],
                 $record['description'],
@@ -71,7 +71,7 @@ class Storage
 
         } catch (PDOException $e) {
             // TODO
-            throw new \RuntimeException('Could not get canteen with id' . $id, 0, $e);
+            throw new \RuntimeException('Could not get canteen with id ' . $id, 0, $e);
         }
     }
 
@@ -102,6 +102,10 @@ class Storage
         }
     }
 
+    /**
+     * @param int $canteenId
+     * @return ExtendedMenuItem[]
+     */
     public function getMenuItems(int $canteenId): array
     {
         try {
@@ -204,6 +208,44 @@ class Storage
         } catch (PDOException | InvalidInstance $e) {
             // TODO
             throw new \RuntimeException($e->getMessage(), $e);
+        }
+    }
+
+    /**
+     * @param int $menuId
+     * @return ExtendedMenuItem
+     * @throws NotFoundException
+     */
+    public function getItemOnMenu(int $menuId): ExtendedMenuItem
+    {
+        try {
+            $statement = $this->pdo->prepare(
+                "
+                    SELECT m.menu_item_id, m.id AS menu_id, m.canteen_id, m.schedule, i.name, i.description, i.category
+                    FROM map_canteen_menu_item AS m
+                    LEFT JOIN menu_items AS i
+                    ON m.menu_item_id = i.id
+                    WHERE m.id = :menuId
+                "
+            );
+            $statement->bindValue(':menuId', $menuId, PDO::PARAM_INT);
+            $statement->execute();
+
+            $record = $statement->fetch(PDO::FETCH_ASSOC);
+            if ($record === false) {
+                throw new NotFoundException();
+            }
+
+            return new ExtendedMenuItem(
+                $record['menu_item_id'],
+                $record['name'],
+                $record['description'],
+                Category::byName($record['category']),
+                $record['menu_id'],
+                Schedule::fromBitMask($record['schedule'])
+            );
+        } catch (PDOException | InvalidInstance $e) {
+            throw new \RuntimeException('Could not get menu item', 0, $e);
         }
     }
 
@@ -334,10 +376,14 @@ class Storage
 
     /**
      * @param int $menuId
+     * @throws NotFoundException
      */
     public function removeItemFromMenu(int $menuId): void
     {
         try {
+            // Check if the item exists
+            $this->getItemOnMenu($menuId);
+
             $statement = $this->pdo->prepare(
                 "
                     DELETE FROM map_canteen_menu_item
