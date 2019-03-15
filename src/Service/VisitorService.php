@@ -3,9 +3,11 @@
 namespace App\Service;
 
 use App\Models\Canteen;
+use App\Models\CanteenReview;
+use App\Models\MenuItemReview;
 use App\Storage\Storage;
 
-class CanteenService
+class VisitorService
 {
     /**
      * @var Storage
@@ -44,5 +46,23 @@ class CanteenService
     public function getAllMenuItems(): array
     {
         return $this->storage->getAllMenuItems();
+    }
+
+    /**
+     * @param int $menuItemId
+     * @return MenuItemReview[]
+     */
+    public function getMenuItemReviews(int $menuItemId): array
+    {
+        return $this->storage->getMenuItemReviews($menuItemId);
+    }
+
+    /**
+     * @param int $canteenId
+     * @return CanteenReview[]
+     */
+    public function getCanteenReview(int $canteenId): array
+    {
+
     }
 }

@@ -46,13 +46,13 @@ class Schedule implements JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'monday'    => $this->data[0] === '1',
-            'tuesday'   => $this->data[1] === '1',
-            'wednesday' => $this->data[2] === '1',
-            'thursday'  => $this->data[3] === '1',
-            'friday'    => $this->data[4] === '1',
-            'saturday'  => $this->data[5] === '1',
-            'sunday'    => $this->data[6] === '1'
+            'MONDAY'    => $this->data[0] === '1',
+            'TUESDAY'   => $this->data[1] === '1',
+            'WEDNESDAY' => $this->data[2] === '1',
+            'THURSDAY'  => $this->data[3] === '1',
+            'FRIDAY'    => $this->data[4] === '1',
+            'SATURDAY'  => $this->data[5] === '1',
+            'SUNDAY'    => $this->data[6] === '1'
         ];
     }
 }

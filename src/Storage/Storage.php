@@ -6,6 +6,7 @@ use App\Models\Canteen;
 use App\Models\Category;
 use App\Models\ExtendedMenuItem;
 use App\Models\MenuItem;
+use App\Models\MenuItemReview;
 use App\Models\OperatingTimes;
 use App\Models\Schedule;
 use App\Storage\Exception\NotFoundException;
@@ -246,6 +247,45 @@ class Storage
             );
         } catch (PDOException | InvalidInstance $e) {
             throw new \RuntimeException('Could not get menu item', 0, $e);
+        }
+    }
+
+    public function getCanteenReviews(int $canteenId): array
+    {
+
+    }
+
+    /**
+     * @param int $menuItemId
+     * @return MenuItemReview[]
+     */
+    public function getMenuItemReviews(int $menuItemId): array
+    {
+        try {
+            $statement = $this->pdo->prepare(
+                "
+                    SELECT id, menu_item_id, description, rating, created_at
+                    FROM menu_item_reviews
+                    WHERE menu_item_id = :id
+                "
+            );
+            $statement->bindValue(':id', $menuItemId, PDO::PARAM_INT);
+            $statement->execute();
+
+            $reviews = [];
+            while (($record = $statement->fetch(PDO::FETCH_ASSOC)) !== false) {
+                $reviews[] = new MenuItemReview(
+                    $record['id'],
+                    $record['rating'],
+                    $record['description'],
+                    \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $record['created_at']),
+                    $record['menu_item_id']
+                );
+            }
+
+            return $reviews;
+        } catch (PDOException $e) {
+            throw new \RuntimeException('Could not get reviews', 0, $e);
         }
     }
 

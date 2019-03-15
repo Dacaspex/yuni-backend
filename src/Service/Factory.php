@@ -9,10 +9,10 @@ class Factory implements AutoFactory
 {
     /**
      * @param Storage $storage
-     * @return CanteenService
+     * @return VisitorService
      */
-    public static function getCanteenService(Storage $storage): CanteenService
+    public static function getCanteenService(Storage $storage): VisitorService
     {
-        return new CanteenService($storage);
+        return new VisitorService($storage);
     }
 }

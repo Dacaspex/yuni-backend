@@ -34,9 +34,9 @@ class CanteenOwnerController
         }
 
         if ($tokenValidator->check($token)) {
-            return new JsonResponse(['message' => 'Token valid'], Response::HTTP_OK);
+            return new JsonResponse(['authenticated' => true]);
         } else {
-            return new JsonResponse(['message' => 'Invalid token'], Response::HTTP_UNAUTHORIZED);
+            return new JsonResponse(['authenticated' => false]);
         }
     }
 

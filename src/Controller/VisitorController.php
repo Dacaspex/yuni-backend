@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Service\CanteenService;
+use App\Service\VisitorService;
 use App\Storage\Exception\NotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,11 +12,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class VisitorController
 {
     /**
-     * @param CanteenService $service
+     * @param VisitorService $service
      * @return Response
      * @Route("/api/canteens")
      */
-    public function getCanteens(CanteenService $service): Response
+    public function getCanteens(VisitorService $service): Response
     {
         $canteens = $service->getCanteens();
 
@@ -25,11 +25,11 @@ class VisitorController
 
     /**
      * @param int $id
-     * @param CanteenService $service
+     * @param VisitorService $service
      * @return Response
      * @Route("/api/canteens/{id}")
      */
-    public function getCanteen(int $id, CanteenService $service): Response
+    public function getCanteen(int $id, VisitorService $service): Response
     {
         try {
             return new JsonResponse($service->getCanteen($id));
@@ -39,20 +39,32 @@ class VisitorController
     }
 
     /**
-     * @param CanteenService $service
+     * @param VisitorService $service
      * @return Response
      * @Route("/api/menu/all")
      */
-    public function getAllMenuItems(CanteenService $service): Response
+    public function getAllMenuItems(VisitorService $service): Response
     {
         return new JsonResponse($service->getAllMenuItems());
     }
 
-    public function getMenuItemReviews(int $menuItemId): Response
+    /**
+     * @param int $id
+     * @param VisitorService $service
+     * @return Response
+     * @Route("/api/menu_item/{id}/review")
+     */
+    public function getMenuItemReviews(int $id, VisitorService $service): Response
     {
-
+        // Feature: Limit and offset
+        return new JsonResponse($service->getMenuItemReviews($id));
     }
 
+    /**
+     * @param int $canteenId
+     * @return Response
+     * @Route("/api/canteen/{id}/review")
+     */
     public function getCanteenReviews(int $canteenId): Response
     {
 

@@ -17,7 +17,7 @@ class Review implements \JsonSerializable
      */
     protected $description;
     /**
-     * @var string
+     * @var \DateTimeImmutable
      */
     protected $createdAt;
 
@@ -25,9 +25,9 @@ class Review implements \JsonSerializable
      * @param int $id
      * @param int $rating
      * @param string $description
-     * @param string $createdAt
+     * @param \DateTimeImmutable $createdAt
      */
-    public function __construct(int $id, int $rating, string $description, string $createdAt)
+    public function __construct(int $id, int $rating, string $description, \DateTimeImmutable $createdAt)
     {
         if ($rating < 1 || $rating > 5) {
             throw new \InvalidArgumentException('Rating out of bounds [1, 5]');
@@ -48,7 +48,7 @@ class Review implements \JsonSerializable
             'id'          => $this->id,
             'rating'      => $this->rating,
             'description' => $this->description,
-            'created_at'  => $this->createdAt,
+            'created_at'  => $this->createdAt->format(DATE_ATOM),
         ];
     }
 }
