@@ -2,6 +2,8 @@
 
 namespace App\Auth;
 
+use Symfony\Component\HttpFoundation\Request;
+
 class TokenValidator
 {
     /**
@@ -17,8 +19,14 @@ class TokenValidator
         $this->tokens = $tokens;
     }
 
-    public function check(string $token): bool
+    /**
+     * @param Request $request
+     * @return bool
+     */
+    public function check(Request $request): bool
     {
+        $token = $request->headers->get('X-api-key');
+
         return in_array($token, $this->tokens);
     }
 }

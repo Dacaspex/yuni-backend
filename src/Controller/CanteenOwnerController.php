@@ -24,16 +24,7 @@ class CanteenOwnerController
      */
     public function authenticate(Request $request, TokenValidator $tokenValidator): Response
     {
-        try {
-            $json  = Json::parse($request->getContent());
-            $token = $json->field('token')->string();
-        } catch (AssertionFailed $e) {
-            return new JsonResponse(['message' => 'Could not find token field'], Response::HTTP_BAD_REQUEST);
-        } catch (CantDecode $e) {
-            return new JsonResponse(['message' => 'Could not decode json'], Response::HTTP_BAD_REQUEST);
-        }
-
-        if ($tokenValidator->check($token)) {
+        if ($tokenValidator->check($request)) {
             return new JsonResponse(['authenticated' => true]);
         } else {
             return new JsonResponse(['authenticated' => false]);
@@ -41,7 +32,7 @@ class CanteenOwnerController
     }
 
     /**
-     * @param Request $request
+     * @param Request $request 
      * @param TokenValidator $tokenValidator
      * @param CanteenOwnerService $service
      * @return Response
@@ -52,13 +43,12 @@ class CanteenOwnerController
         TokenValidator $tokenValidator,
         CanteenOwnerService $service
     ): Response {
+        if (!$tokenValidator->check($request)) {
+            return $this->handleUnAuthorised();
+        }
+
         try {
             $json = Json::parse($request->getContent());
-
-            $token = $json->field('token')->string();
-            if (!$tokenValidator->check($token)) {
-                return $this->handleUnAuthorised();
-            }
 
             $canteenId  = $json->field('canteen_id')->int();
             $menuItemId = $json->field('menu_item_id')->int();
@@ -86,21 +76,16 @@ class CanteenOwnerController
         TokenValidator $tokenValidator,
         CanteenOwnerService $service
     ): Response {
+        if (!$tokenValidator->check($request)) {
+            return $this->handleUnAuthorised();
+        }
+
         try {
-            $json = Json::parse($request->getContent());
-
-            $token = $json->field('token')->string();
-            if (!$tokenValidator->check($token)) {
-                return $this->handleUnAuthorised();
-            }
-
             $service->removeItemFromMenu($menuId);
 
             return new JsonResponse();
-        } catch (CantDecode | AssertionFailed $e) {
-            return $this->handleParseException($e);
         } catch (NotFoundException $e) {
-            return $this->handleNotFound($e);
+            return $this->handleNotFound();
         }
     }
 
@@ -122,10 +107,9 @@ class CanteenOwnerController
     }
 
     /**
-     * @param \Exception $e
      * @return Response
      */
-    private function handleNotFound(\Exception $e): Response
+    private function handleNotFound(): Response
     {
         return new JsonResponse(null, Response::HTTP_NOT_FOUND);
     }
