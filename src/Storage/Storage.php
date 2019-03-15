@@ -44,6 +44,7 @@ class Storage
     public function getCanteen(int $id): Canteen
     {
         try {
+            // Get canteen
             $statement = $this->pdo->prepare(
                 "
                     SELECT id, name, description, building, longitude, latitude
@@ -67,6 +68,7 @@ class Storage
                 $record['longitude'],
                 $record['latitude'],
                 $this->getOperatingTimes($id),
+                $this->getCanteenRating($id),
                 $this->getMenuItems($id)
             );
 
@@ -101,6 +103,32 @@ class Storage
             // TODO
             throw new \RuntimeException($e->getMessage(), $e);
         }
+    }
+
+    /**
+     * @param int $canteenId
+     * @return float|null
+     */
+    public function getCanteenRating(int $canteenId): ?float
+    {
+        // Get rating
+        $statement = $this->pdo->prepare(
+            "
+                    SELECT AVG(rating) as rating
+                    FROM canteen_reviews
+                    WHERE canteen_id = :id
+                "
+        );
+        $statement->bindValue(':id', $canteenId, PDO::PARAM_INT);
+        $statement->execute();
+
+        $record = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if ($record === false) {
+            return null;
+        }
+
+        return $record['rating'];
     }
 
     /**
@@ -162,10 +190,6 @@ class Storage
 
             $canteens = [];
             while (($record = $query->fetch(PDO::FETCH_ASSOC)) !== false) {
-                // Get operating times and menu items
-                $operatingTimes = $this->getOperatingTimes($record['id']);
-                $menuItems      = $this->getMenuItems($record['id']);
-
                 $canteens[] = new Canteen(
                     $record['id'],
                     $record['name'],
@@ -173,8 +197,9 @@ class Storage
                     $record['building'],
                     $record['longitude'],
                     $record['latitude'],
-                    $operatingTimes,
-                    $menuItems
+                    $this->getOperatingTimes($record['id']),
+                    $this->getCanteenRating($record['id']),
+                    $this->getMenuItems($record['id'])
                 );
             }
 
