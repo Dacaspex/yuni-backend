@@ -13,7 +13,7 @@ class Review implements \JsonSerializable
      */
     protected $rating;
     /**
-     * @var string
+     * @var string|null
      */
     protected $description;
     /**
@@ -24,10 +24,10 @@ class Review implements \JsonSerializable
     /**
      * @param int $id
      * @param int $rating
-     * @param string $description
+     * @param string|null $description
      * @param \DateTimeImmutable $createdAt
      */
-    public function __construct(int $id, int $rating, string $description, \DateTimeImmutable $createdAt)
+    public function __construct(int $id, int $rating, ?string $description, \DateTimeImmutable $createdAt)
     {
         if ($rating < 1 || $rating > 5) {
             throw new \InvalidArgumentException('Rating out of bounds [1, 5]');

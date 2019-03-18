@@ -2,12 +2,16 @@
 
 namespace App\Controller;
 
+use App\Service\Exception\ReviewTooLongException;
 use App\Service\VisitorService;
 use App\Storage\Exception\NotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Vcn\Pipette\Json;
+use Vcn\Pipette\Json\Exception\AssertionFailed;
+use Vcn\Pipette\Json\Exception\CantDecode;
 
 class VisitorController
 {
@@ -52,7 +56,7 @@ class VisitorController
      * @param int $id
      * @param VisitorService $service
      * @return Response
-     * @Route("/api/menu_item/{id}/review")
+     * @Route("/api/menu_items/{id}/reviews", methods={"GET"})
      */
     public function getMenuItemReviews(int $id, VisitorService $service): Response
     {
@@ -61,22 +65,72 @@ class VisitorController
     }
 
     /**
-     * @param int $canteenId
+     * @param int $id
+     * @param VisitorService $service
      * @return Response
-     * @Route("/api/canteen/{id}/review")
+     * @Route("/api/canteens/{id}/reviews", methods={"GET"})
      */
-    public function getCanteenReviews(int $canteenId): Response
+    public function getCanteenReviews(int $id, VisitorService $service): Response
     {
-
+        return new JsonResponse($service->getCanteenReviews($id));
     }
 
-    public function addMenuItemReview(int $menuItemReview, Request $request): Response
+    /**
+     * @param int $id
+     * @param Request $request
+     * @param VisitorService $service
+     * @return Response
+     * @Route("/api/menu_items/{id}/reviews", methods={"POST"})
+     */
+    public function addMenuItemReview(int $id, Request $request, VisitorService $service): Response
     {
+        try {
+            $json = Json::parse($request->getContent());
 
+            $rating      = $json->field('rating')->int();
+            $description = $json->field('description')->string();
+
+            $service->createMenuItemReview($id, $rating, $description);
+
+            return new JsonResponse();
+        } catch (CantDecode | AssertionFailed $e) {
+            return $this->handleParseException($e);
+        } catch (ReviewTooLongException $e) {
+            return new JsonResponse(['message' => 'Review too long'], Response::HTTP_BAD_REQUEST);
+        }
     }
 
-    public function addCanteenReview(int $canteenId): Response
+    /**
+     * @param int $id
+     * @param Request $request
+     * @param VisitorService $service
+     * @return Response
+     * @Route("/api/canteens/{id}/reviews", methods={"POST"})
+     */
+    public function addCanteenReview(int $id, Request $request, VisitorService $service): Response
     {
+        try {
+            $json = Json::parse($request->getContent());
 
+            $rating      = $json->field('rating')->int();
+            $description = $json->field('description')->string();
+
+            $service->createCanteenReview($id, $rating, $description);
+
+            return new JsonResponse();
+        } catch (CantDecode | AssertionFailed $e) {
+            return $this->handleParseException($e);
+        } catch (ReviewTooLongException $e) {
+            return new JsonResponse(['message' => 'Review too long'], Response::HTTP_BAD_REQUEST);
+        }
+    }
+
+    /**
+     * @param \Exception $e
+     * @return Response
+     */
+    private function handleParseException(\Exception $e): Response
+    {
+        return new JsonResponse(['message' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
     }
 }

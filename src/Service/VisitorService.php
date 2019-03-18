@@ -5,10 +5,15 @@ namespace App\Service;
 use App\Models\Canteen;
 use App\Models\CanteenReview;
 use App\Models\MenuItemReview;
+use App\Service\Exception\ReviewTooLongException;
 use App\Storage\Storage;
 
 class VisitorService
 {
+    /**
+     * Maximum allowed number of characters for a review
+     */
+    private const REVIEW_CHAR_LIMIT = 200;
     /**
      * @var Storage
      */
@@ -61,8 +66,38 @@ class VisitorService
      * @param int $canteenId
      * @return CanteenReview[]
      */
-    public function getCanteenReview(int $canteenId): array
+    public function getCanteenReviews(int $canteenId): array
     {
+        return $this->storage->getCanteenReviews($canteenId);
+    }
 
+    /**
+     * @param int $menuItemId
+     * @param int $rating
+     * @param string $description
+     * @throws ReviewTooLongException
+     */
+    public function createMenuItemReview(int $menuItemId, int $rating, string $description): void
+    {
+        if (strlen($description) > self::REVIEW_CHAR_LIMIT) {
+            throw new ReviewTooLongException();
+        }
+
+        $this->storage->createMenuItemReview($menuItemId, $rating, $description);
+    }
+
+    /**
+     * @param int $canteenId
+     * @param int $rating
+     * @param string $description
+     * @throws ReviewTooLongException
+     */
+    public function createCanteenReview(int $canteenId, int $rating, string $description): void
+    {
+        if (strlen($description) > self::REVIEW_CHAR_LIMIT) {
+            throw new ReviewTooLongException();
+        }
+
+        $this->storage->createCanteenReview($canteenId, $rating, $description);
     }
 }

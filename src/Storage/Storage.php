@@ -3,6 +3,7 @@
 namespace App\Storage;
 
 use App\Models\Canteen;
+use App\Models\CanteenReview;
 use App\Models\Category;
 use App\Models\ExtendedMenuItem;
 use App\Models\MenuItem;
@@ -78,6 +79,10 @@ class Storage
         }
     }
 
+    /**
+     * @param int $canteenId
+     * @return OperatingTimes
+     */
     public function getOperatingTimes(int $canteenId): OperatingTimes
     {
         try {
@@ -210,6 +215,9 @@ class Storage
         }
     }
 
+    /**
+     * @return MenuItem[]
+     */
     public function getAllMenuItems(): array
     {
         try {
@@ -275,9 +283,39 @@ class Storage
         }
     }
 
+    /**
+     * @param int $canteenId
+     * @return CanteenReview[]
+     */
     public function getCanteenReviews(int $canteenId): array
     {
+        try {
+            $statement = $this->pdo->prepare(
+                "
+                    SELECT id, canteen_id, rating, description, created_at
+                    FROM canteen_reviews
+                    WHERE canteen_id = :id
+                "
+            );
+            $statement->bindValue(':id', $canteenId, PDO::PARAM_INT);
+            $statement->execute();
 
+            $reviews = [];
+            while (($record = $statement->fetch(PDO::FETCH_ASSOC)) !== false) {
+                $reviews[] = new CanteenReview(
+                    $record['id'],
+                    $record['rating'],
+                    $record['description'],
+                    $this->parseDate($record['created_at']),
+                    $record['canteen_id']
+                );
+            }
+
+            return $reviews;
+        } catch (PDOException $e) {
+            // TODO
+            throw new \RuntimeException('Could not fetch canteen reviews', 0, $e);
+        }
     }
 
     /**
@@ -303,7 +341,7 @@ class Storage
                     $record['id'],
                     $record['rating'],
                     $record['description'],
-                    \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $record['created_at']),
+                    $this->parseDate($record['created_at']),
                     $record['menu_item_id']
                 );
             }
@@ -361,6 +399,56 @@ class Storage
             $statement->bindValue(':canteenId', $canteenId, PDO::PARAM_INT);
             $statement->bindValue(':menuItemId', $menuItemId, PDO::PARAM_INT);
             $statement->bindValue(':schedule', $schedule->toBitMask());
+            $statement->execute();
+        } catch (PDOException $e) {
+            // TODO
+            throw new \RuntimeException($e->getMessage(), 0, $e);
+        }
+    }
+
+    /**
+     * @param int $menuItemId
+     * @param int $rating
+     * @param string $description
+     */
+    public function createMenuItemReview(int $menuItemId, int $rating, string $description): void
+    {
+        try {
+            $statement = $this->pdo->prepare(
+                "
+                    INSERT INTO menu_item_reviews
+                    (menu_item_id, description, rating)
+                    VALUES (:id, :description, :rating)
+                "
+            );
+            $statement->bindValue(':id', $menuItemId, PDO::PARAM_INT);
+            $statement->bindValue(':description', $description);
+            $statement->bindValue(':rating', $rating, PDO::PARAM_INT);
+            $statement->execute();
+        } catch (PDOException $e) {
+            // TODO
+            throw new \RuntimeException($e->getMessage(), 0, $e);
+        }
+    }
+
+    /**
+     * @param int $canteenId
+     * @param int $rating
+     * @param string $description
+     */
+    public function createCanteenReview(int $canteenId, int $rating, string $description): void
+    {
+        try {
+            $statement = $this->pdo->prepare(
+                "
+                    INSERT INTO canteen_reviews
+                    (canteen_id, description, rating)
+                    VALUES (:id, :description, :rating)
+                "
+            );
+            $statement->bindValue(':id', $canteenId, PDO::PARAM_INT);
+            $statement->bindValue(':description', $description);
+            $statement->bindValue(':rating', $rating, PDO::PARAM_INT);
             $statement->execute();
         } catch (PDOException $e) {
             // TODO
@@ -460,5 +548,14 @@ class Storage
         } catch (PDOException $e) {
             throw new \RuntimeException('Could not remove item from menu', 0, $e);
         }
+    }
+
+    /**
+     * @param string $date
+     * @return \DateTimeImmutable
+     */
+    private function parseDate(string $date): \DateTimeImmutable
+    {
+        return \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $date);
     }
 }

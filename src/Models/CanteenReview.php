@@ -12,11 +12,11 @@ class CanteenReview extends Review
     /**
      * @param int $id
      * @param int $rating
-     * @param string $description
-     * @param string $createdAt
+     * @param string|null $description
+     * @param \DateTimeImmutable $createdAt
      * @param int $canteenId
      */
-    public function __construct(int $id, int $rating, string $description, string $createdAt, int $canteenId)
+    public function __construct(int $id, int $rating, ?string $description, \DateTimeImmutable $createdAt, int $canteenId)
     {
         parent::__construct($id, $rating, $description, $createdAt);
 
