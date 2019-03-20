@@ -408,10 +408,10 @@ class Storage
 
     /**
      * @param int $menuItemId
-     * @param int $rating
+     * @param float $rating
      * @param string $description
      */
-    public function createMenuItemReview(int $menuItemId, int $rating, string $description): void
+    public function createMenuItemReview(int $menuItemId, float $rating, string $description): void
     {
         try {
             $statement = $this->pdo->prepare(
@@ -423,7 +423,7 @@ class Storage
             );
             $statement->bindValue(':id', $menuItemId, PDO::PARAM_INT);
             $statement->bindValue(':description', $description);
-            $statement->bindValue(':rating', $rating, PDO::PARAM_INT);
+            $statement->bindValue(':rating', $rating);
             $statement->execute();
         } catch (PDOException $e) {
             // TODO
@@ -433,10 +433,10 @@ class Storage
 
     /**
      * @param int $canteenId
-     * @param int $rating
+     * @param float $rating
      * @param string $description
      */
-    public function createCanteenReview(int $canteenId, int $rating, string $description): void
+    public function createCanteenReview(int $canteenId, float $rating, string $description): void
     {
         try {
             $statement = $this->pdo->prepare(
@@ -448,7 +448,7 @@ class Storage
             );
             $statement->bindValue(':id', $canteenId, PDO::PARAM_INT);
             $statement->bindValue(':description', $description);
-            $statement->bindValue(':rating', $rating, PDO::PARAM_INT);
+            $statement->bindValue(':rating', $rating);
             $statement->execute();
         } catch (PDOException $e) {
             // TODO
@@ -517,6 +517,29 @@ class Storage
 
             $statement->execute();
 
+        } catch (PDOException $e) {
+            // TODO
+            throw new \RuntimeException($e->getMessage(), 0, $e);
+        }
+    }
+
+    /**
+     * @param int $menuId
+     * @param Schedule $schedule
+     */
+    public function updateSchedule(int $menuId, Schedule $schedule)
+    {
+        try {
+            $statement = $this->pdo->prepare(
+                "
+                    UPDATE map_canteen_menu_item
+                    SET schedule = :schedule
+                    WHERE id = :id
+                "
+            );
+            $statement->bindValue(':schedule', $schedule);
+            $statement->bindValue(':id', $menuId, PDO::PARAM_INT);
+            $statement->execute();
         } catch (PDOException $e) {
             // TODO
             throw new \RuntimeException($e->getMessage(), 0, $e);

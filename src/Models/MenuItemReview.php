@@ -11,12 +11,12 @@ class MenuItemReview extends Review
 
     /**
      * @param int $id
-     * @param int $rating
+     * @param float $rating
      * @param string $description
      * @param \DateTimeImmutable $createdAt
      * @param int $menuItemId
      */
-    public function __construct(int $id, int $rating, string $description, \DateTimeImmutable $createdAt, int $menuItemId)
+    public function __construct(int $id, float $rating, string $description, \DateTimeImmutable $createdAt, int $menuItemId)
     {
         parent::__construct($id, $rating, $description, $createdAt);
 

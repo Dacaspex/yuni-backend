@@ -91,6 +91,15 @@ class CanteenOwnerController
 
     /**
      * @return Response
+     * @Route("", methods={"POST"})
+     */
+    public function updateSchedule(): Response
+    {
+        // TODO
+    }
+
+    /**
+     * @return Response
      */
     private function handleUnAuthorised(): Response
     {

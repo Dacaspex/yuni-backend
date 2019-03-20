@@ -73,11 +73,11 @@ class VisitorService
 
     /**
      * @param int $menuItemId
-     * @param int $rating
+     * @param float $rating
      * @param string $description
      * @throws ReviewTooLongException
      */
-    public function createMenuItemReview(int $menuItemId, int $rating, string $description): void
+    public function createMenuItemReview(int $menuItemId, float $rating, string $description): void
     {
         if (strlen($description) > self::REVIEW_CHAR_LIMIT) {
             throw new ReviewTooLongException();
@@ -88,11 +88,11 @@ class VisitorService
 
     /**
      * @param int $canteenId
-     * @param int $rating
+     * @param float $rating
      * @param string $description
      * @throws ReviewTooLongException
      */
-    public function createCanteenReview(int $canteenId, int $rating, string $description): void
+    public function createCanteenReview(int $canteenId, float $rating, string $description): void
     {
         if (strlen($description) > self::REVIEW_CHAR_LIMIT) {
             throw new ReviewTooLongException();

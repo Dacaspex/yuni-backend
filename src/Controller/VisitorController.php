@@ -87,7 +87,7 @@ class VisitorController
         try {
             $json = Json::parse($request->getContent());
 
-            $rating      = $json->field('rating')->int();
+            $rating      = $json->field('rating')->float();
             $description = $json->field('description')->string();
 
             $service->createMenuItemReview($id, $rating, $description);
@@ -112,7 +112,7 @@ class VisitorController
         try {
             $json = Json::parse($request->getContent());
 
-            $rating      = $json->field('rating')->int();
+            $rating      = $json->field('rating')->float();
             $description = $json->field('description')->string();
 
             $service->createCanteenReview($id, $rating, $description);

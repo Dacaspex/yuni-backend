@@ -9,7 +9,7 @@ class Review implements \JsonSerializable
      */
     protected $id;
     /**
-     * @var int between 1 <= n <= 5
+     * @var float between 1 <= n <= 5
      */
     protected $rating;
     /**
@@ -23,11 +23,11 @@ class Review implements \JsonSerializable
 
     /**
      * @param int $id
-     * @param int $rating
+     * @param float $rating
      * @param string|null $description
      * @param \DateTimeImmutable $createdAt
      */
-    public function __construct(int $id, int $rating, ?string $description, \DateTimeImmutable $createdAt)
+    public function __construct(int $id, float $rating, ?string $description, \DateTimeImmutable $createdAt)
     {
         if ($rating < 1 || $rating > 5) {
             throw new \InvalidArgumentException('Rating out of bounds [1, 5]');
