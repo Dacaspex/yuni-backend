@@ -45,4 +45,13 @@ class CanteenOwnerService
     {
         $this->storage->removeItemFromMenu($menuId);
     }
+
+    /**
+     * @param int $menuId
+     * @param string $schedule
+     */
+    public function updateMenuItemSchedule(int $menuId, string $schedule): void
+    {
+        $this->storage->updateMenuItemSchedule($menuId, $schedule);
+    }
 }

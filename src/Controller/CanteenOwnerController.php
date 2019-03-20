@@ -90,12 +90,33 @@ class CanteenOwnerController
     }
 
     /**
+     * @param int $id
+     * @param Request $request
+     * @param TokenValidator $tokenValidator
+     * @param CanteenOwnerService $service
      * @return Response
-     * @Route("", methods={"POST"})
+     * @Route("/api/menu/{id}/schedule", methods={"PATCH"})
      */
-    public function updateSchedule(): Response
-    {
-        // TODO
+    public function updateMenuItemSchedule(
+        int $id,
+        Request $request,
+        TokenValidator $tokenValidator,
+        CanteenOwnerService $service
+    ): Response {
+        if (!$tokenValidator->check($request)) {
+            return $this->handleUnAuthorised();
+        }
+
+        try {
+            $json     = Json::parse($request->getContent());
+            $schedule = $json->field('schedule')->string();
+
+            $service->updateMenuItemSchedule($id, $schedule);
+
+            return new JsonResponse();
+        } catch (CantDecode | AssertionFailed $e) {
+            return $this->handleParseException($e);
+        }
     }
 
     /**

@@ -525,11 +525,12 @@ class Storage
 
     /**
      * @param int $menuId
-     * @param Schedule $schedule
+     * @param string $schedule
      */
-    public function updateSchedule(int $menuId, Schedule $schedule)
+    public function updateMenuItemSchedule(int $menuId, string $schedule)
     {
         try {
+            // TODO: 404
             $statement = $this->pdo->prepare(
                 "
                     UPDATE map_canteen_menu_item
