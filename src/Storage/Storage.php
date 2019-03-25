@@ -148,7 +148,7 @@ class Storage
             "
                 SELECT AVG(rating) AS rating 
                 FROM menu_item_reviews
-                WHERE id = :id
+                WHERE menu_item_id = :id
             "
         );
         $statement->bindValue(':id', $id, PDO::PARAM_INT);
