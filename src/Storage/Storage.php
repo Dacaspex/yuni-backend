@@ -284,7 +284,7 @@ class Storage
         try {
             $statement = $this->pdo->prepare(
                 "
-                    SELECT m.menu_item_id AS id, m.id AS menu_id, m.canteen_id, m.schedule, i.name, i.description, i.category
+                    SELECT m.menu_item_id, m.id AS menu_id, m.canteen_id, m.schedule, i.name, i.description, i.category
                     FROM map_canteen_menu_item AS m
                     LEFT JOIN menu_items AS i
                     ON m.menu_item_id = i.id
@@ -304,7 +304,7 @@ class Storage
                 $record['name'],
                 $record['description'],
                 Category::byName($record['category']),
-                $this->getMenuItemRating($record['id']),
+                $this->getMenuItemRating($record['menu_item_id']),
                 $record['menu_id'],
                 Schedule::fromBitMask($record['schedule'])
             );
