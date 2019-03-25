@@ -22,23 +22,30 @@ class MenuItem implements JsonSerializable
      * @var Category
      */
     protected $category;
+    /**
+     * @var float|null
+     */
+    protected $rating;
 
     /**
      * @param int $id
      * @param string $name
      * @param string $description
      * @param Category $category
+     * @param float|null $rating
      */
     public function __construct(
         int $id,
         string $name,
         string $description,
-        Category $category
+        Category $category,
+        ?float $rating
     ) {
         $this->id          = $id;
         $this->name        = $name;
         $this->description = $description;
         $this->category    = $category;
+        $this->rating      = $rating;
     }
 
     /**
@@ -83,6 +90,7 @@ class MenuItem implements JsonSerializable
             'name'        => $this->name,
             'description' => $this->description,
             'category'    => $this->category->getName(),
+            'rating'      => $this->rating,
         ];
     }
 }

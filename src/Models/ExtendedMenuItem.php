@@ -18,6 +18,7 @@ class ExtendedMenuItem extends MenuItem
      * @param string $name
      * @param string $description
      * @param Category $category
+     * @param float|null $rating
      * @param int $menuId
      * @param Schedule $schedule
      */
@@ -26,10 +27,11 @@ class ExtendedMenuItem extends MenuItem
         string $name,
         string $description,
         Category $category,
+        ?float $rating,
         int $menuId,
         Schedule $schedule
     ) {
-        parent::__construct($id, $name, $description, $category);
+        parent::__construct($id, $name, $description, $category, $rating);
 
         $this->menuId   = $menuId;
         $this->schedule = $schedule;

@@ -113,6 +113,7 @@ class Storage
     /**
      * @param int $canteenId
      * @return float|null
+     * @throws PDOException
      */
     public function getCanteenRating(int $canteenId): ?float
     {
@@ -125,6 +126,32 @@ class Storage
                 "
         );
         $statement->bindValue(':id', $canteenId, PDO::PARAM_INT);
+        $statement->execute();
+
+        $record = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if ($record === false) {
+            return null;
+        }
+
+        return $record['rating'];
+    }
+
+    /**
+     * @param int $id
+     * @return float|null
+     * @throws PDOException
+     */
+    public function getMenuItemRating(int $id): ?float
+    {
+        $statement = $this->pdo->prepare(
+            "
+                SELECT AVG(rating) AS rating 
+                FROM menu_item_reviews
+                WHERE id = :id
+            "
+        );
+        $statement->bindValue(':id', $id, PDO::PARAM_INT);
         $statement->execute();
 
         $record = $statement->fetch(PDO::FETCH_ASSOC);
@@ -168,6 +195,7 @@ class Storage
                     $record['name'],
                     $record['description'],
                     Category::byName($record['category']),
+                    $this->getMenuItemRating($record['id']),
                     $record['menu_id'],
                     Schedule::fromBitMask($record['schedule'])
                 );
@@ -234,7 +262,8 @@ class Storage
                     $record['id'],
                     $record['name'],
                     $record['description'],
-                    Category::byName($record['category'])
+                    Category::byName($record['category']),
+                    $this->getMenuItemRating($record['id'])
                 );
             }
 
@@ -275,6 +304,7 @@ class Storage
                 $record['name'],
                 $record['description'],
                 Category::byName($record['category']),
+                $this->getMenuItemRating($record['id']),
                 $record['menu_id'],
                 Schedule::fromBitMask($record['schedule'])
             );
