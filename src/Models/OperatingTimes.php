@@ -35,8 +35,8 @@ class OperatingTimes implements JsonSerializable
 
         foreach ($this->openingTimes as $day => $time) {
             $json[$day] = [
-                'opening' => $this->openingTimes[$day],
-                'closing' => $this->closingTimes[$day]
+                'opening' => (int)$this->openingTimes[$day],
+                'closing' => (int)$this->closingTimes[$day]
             ];
         }
 
