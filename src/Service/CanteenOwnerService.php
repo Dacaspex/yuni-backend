@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Models\Availability;
 use App\Models\Schedule;
 use App\Storage\Storage;
 
@@ -53,5 +54,14 @@ class CanteenOwnerService
     public function updateMenuItemSchedule(int $menuId, string $schedule): void
     {
         $this->storage->updateMenuItemSchedule($menuId, $schedule);
+    }
+
+    /**
+     * @param int $menuId
+     * @param Availability $availability
+     */
+    public function updateMenuItemAvailability(int $menuId, Availability $availability): void
+    {
+        $this->storage->updateMenuItemAvailability($menuId, $availability);
     }
 }

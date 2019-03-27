@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Auth\TokenValidator;
+use App\Models\Availability;
 use App\Models\Schedule;
 use App\Service\CanteenOwnerService;
 use App\Storage\Exception\NotFoundException;
@@ -10,6 +11,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Vcn\Lib\Enum\Exception\InvalidInstance;
 use Vcn\Pipette\Json;
 use Vcn\Pipette\Json\Exception\AssertionFailed;
 use Vcn\Pipette\Json\Exception\CantDecode;
@@ -115,6 +117,36 @@ class CanteenOwnerController
 
             return new JsonResponse();
         } catch (CantDecode | AssertionFailed $e) {
+            return $this->handleParseException($e);
+        }
+    }
+
+    /**
+     * @param int $id
+     * @param Request $request
+     * @param TokenValidator $tokenValidator
+     * @param CanteenOwnerService $service
+     * @return JsonResponse|Response
+     * @Route("/api/menu/{id}/availability", methods={"PATCH"})
+     */
+    public function updateMenuItemAvailability(
+        int $id,
+        Request $request,
+        TokenValidator $tokenValidator,
+        CanteenOwnerService $service
+    ) {
+        if (!$tokenValidator->check($request)) {
+            return $this->handleUnAuthorised();
+        }
+
+        try {
+            $json     = Json::parse($request->getContent());
+            $schedule = Availability::byName($json->field('availability')->string());
+
+            $service->updateMenuItemAvailability($id, $schedule);
+
+            return new JsonResponse();
+        } catch (CantDecode | AssertionFailed | InvalidInstance $e) {
             return $this->handleParseException($e);
         }
     }

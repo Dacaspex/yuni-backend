@@ -2,6 +2,7 @@
 
 namespace App\Storage;
 
+use App\Models\Availability;
 use App\Models\Canteen;
 use App\Models\CanteenReview;
 use App\Models\Category;
@@ -178,7 +179,8 @@ class Storage
                       item.name, 
                       item.description,
                       category,
-                      map.schedule
+                      map.schedule,
+                      map.availability
                     FROM map_canteen_menu_item AS map
                     LEFT JOIN menu_items AS item
                     ON map.menu_item_id = item.id
@@ -197,7 +199,8 @@ class Storage
                     Category::byName($record['category']),
                     $this->getMenuItemRating($record['id']),
                     $record['menu_id'],
-                    Schedule::fromBitMask($record['schedule'])
+                    Schedule::fromBitMask($record['schedule']),
+                    Availability::byName($record['availability'])
                 );
             }
 
@@ -284,7 +287,15 @@ class Storage
         try {
             $statement = $this->pdo->prepare(
                 "
-                    SELECT m.menu_item_id, m.id AS menu_id, m.canteen_id, m.schedule, i.name, i.description, i.category
+                    SELECT 
+                      m.menu_item_id, 
+                      m.id AS menu_id, 
+                      m.canteen_id, 
+                      m.schedule, 
+                      i.name, 
+                      i.description, 
+                      i.category,
+                      m.availability
                     FROM map_canteen_menu_item AS m
                     LEFT JOIN menu_items AS i
                     ON m.menu_item_id = i.id
@@ -306,7 +317,8 @@ class Storage
                 Category::byName($record['category']),
                 $this->getMenuItemRating($record['menu_item_id']),
                 $record['menu_id'],
-                Schedule::fromBitMask($record['schedule'])
+                Schedule::fromBitMask($record['schedule']),
+                Availability::byName($record['availability'])
             );
         } catch (PDOException | InvalidInstance $e) {
             throw new \RuntimeException('Could not get menu item', 0, $e);
@@ -569,6 +581,30 @@ class Storage
                 "
             );
             $statement->bindValue(':schedule', $schedule);
+            $statement->bindValue(':id', $menuId, PDO::PARAM_INT);
+            $statement->execute();
+        } catch (PDOException $e) {
+            // TODO
+            throw new \RuntimeException($e->getMessage(), 0, $e);
+        }
+    }
+
+    /**
+     * @param int $menuId
+     * @param Availability $availability
+     */
+    public function updateMenuItemAvailability(int $menuId, Availability $availability): void
+    {
+        try {
+            // TODO: 404
+            $statement = $this->pdo->prepare(
+                "
+                    UPDATE map_canteen_menu_item
+                    SET availability = :availability
+                    WHERE id = :id
+                "
+            );
+            $statement->bindValue(':availability', $availability->getName());
             $statement->bindValue(':id', $menuId, PDO::PARAM_INT);
             $statement->execute();
         } catch (PDOException $e) {

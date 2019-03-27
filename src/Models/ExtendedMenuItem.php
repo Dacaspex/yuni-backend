@@ -12,6 +12,10 @@ class ExtendedMenuItem extends MenuItem
      * @var Schedule
      */
     private $schedule;
+    /**
+     * @var Availability
+     */
+    private $availability;
 
     /**
      * @param int $id
@@ -21,6 +25,7 @@ class ExtendedMenuItem extends MenuItem
      * @param float|null $rating
      * @param int $menuId
      * @param Schedule $schedule
+     * @param Availability $availability
      */
     public function __construct(
         int $id,
@@ -29,12 +34,14 @@ class ExtendedMenuItem extends MenuItem
         Category $category,
         ?float $rating,
         int $menuId,
-        Schedule $schedule
+        Schedule $schedule,
+        Availability $availability
     ) {
         parent::__construct($id, $name, $description, $category, $rating);
 
-        $this->menuId   = $menuId;
-        $this->schedule = $schedule;
+        $this->menuId       = $menuId;
+        $this->schedule     = $schedule;
+        $this->availability = $availability;
     }
 
     /**
@@ -61,8 +68,9 @@ class ExtendedMenuItem extends MenuItem
         return array_merge(
             parent::jsonSerialize(),
             [
-                'menu_id'  => $this->menuId,
-                'schedule' => $this->schedule,
+                'menu_id'      => $this->menuId,
+                'schedule'     => $this->schedule,
+                'availability' => $this->availability->getName(),
             ]
         );
     }
