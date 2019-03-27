@@ -29,10 +29,6 @@ class Review implements \JsonSerializable
      */
     public function __construct(int $id, float $rating, ?string $description, \DateTimeImmutable $createdAt)
     {
-        if ($rating < 1 || $rating > 5) {
-            throw new \InvalidArgumentException('Rating out of bounds [1, 5]');
-        }
-
         $this->id          = $id;
         $this->rating      = $rating;
         $this->description = $description;
