@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use JsonSerializable;
+use Vcn\Pipette\Json;
 
 class OperatingTimes implements JsonSerializable
 {
@@ -27,6 +28,26 @@ class OperatingTimes implements JsonSerializable
     }
 
     /**
+     * Flattens and combines the closing and opening times into one array
+     * [day, opening time, closing time]
+     *
+     * @return array
+     */
+    public function getEntries(): array
+    {
+        $entries = [];
+        foreach ($this->openingTimes as $day => $openingTime) {
+            $entries[] = [
+                'day'     => $day,
+                'opening' => $openingTime,
+                'closing' => $this->closingTimes[$day]
+            ];
+        }
+
+        return $entries;
+    }
+
+    /**
      * @inheritdoc
      */
     public function jsonSerialize()
@@ -41,5 +62,33 @@ class OperatingTimes implements JsonSerializable
         }
 
         return $json;
+    }
+
+    /**
+     * @param Json\Value $json
+     * @return OperatingTimes
+     * @throws Json\Exception\AssertionFailed
+     */
+    public static function fromJson(Json\Value $json): OperatingTimes
+    {
+        $openingTimes = [];
+        $closingTimes = [];
+
+        $json->objectMapWithIndex(
+            function (string $day, Json\Value $json) use (&$openingTimes, &$closingTimes) {
+                $json->objectMapWithIndex(
+                    function (string $type, Json\Value $json) use (&$openingTimes, &$closingTimes, $day) {
+                        if ($type === 'opening') {
+                            $openingTimes[$day] = $json->int();
+                        }
+                        if ($type === 'closing') {
+                            $closingTimes[$day] = $json->int();
+                        }
+                    }
+                );
+            }
+        );
+
+        return new OperatingTimes($openingTimes, $closingTimes);
     }
 }

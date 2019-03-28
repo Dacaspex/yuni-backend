@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Auth\TokenValidator;
 use App\Models\Availability;
+use App\Models\OperatingTimes;
 use App\Models\Schedule;
 use App\Service\CanteenOwnerService;
 use App\Storage\Exception\NotFoundException;
@@ -88,6 +89,39 @@ class CanteenOwnerController
             return new JsonResponse();
         } catch (NotFoundException $e) {
             return $this->handleNotFound();
+        }
+    }
+
+    /**
+     * @param int $id
+     * @param Request $request
+     * @param TokenValidator $tokenValidator
+     * @param CanteenOwnerService $service
+     * @return Response
+     * @Route("/api/canteens/{id}", methods={"PATCH"})
+     */
+    public function updateCanteen(
+        int $id,
+        Request $request,
+        TokenValidator $tokenValidator,
+        CanteenOwnerService $service
+    ): Response {
+        if (!$tokenValidator->check($request)) {
+            return $this->handleUnAuthorised();
+        }
+
+        try {
+            $json = Json::parse($request->getContent());
+
+            $name           = $json->field('name')->string();
+            $description    = $json->field('description')->string();
+            $operatingTimes = OperatingTimes::fromJson($json->field('operating_times'));
+
+            $service->updateCanteen($id, $name, $description, $operatingTimes);
+
+            return new JsonResponse();
+        } catch (CantDecode | AssertionFailed $e) {
+            return $this->handleParseException($e);
         }
     }
 

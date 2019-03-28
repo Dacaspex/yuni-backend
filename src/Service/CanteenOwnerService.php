@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Models\Availability;
+use App\Models\OperatingTimes;
 use App\Models\Schedule;
 use App\Storage\Storage;
 
@@ -45,6 +46,21 @@ class CanteenOwnerService
     public function removeItemFromMenu(int $menuId): void
     {
         $this->storage->removeItemFromMenu($menuId);
+    }
+
+    /**
+     * @param int $canteenId
+     * @param string $name
+     * @param string $description
+     * @param OperatingTimes $operatingTimes
+     */
+    public function updateCanteen(
+        int $canteenId,
+        string $name,
+        string $description,
+        OperatingTimes $operatingTimes
+    ): void {
+        $this->storage->updateCanteen($canteenId, $name, $description, $operatingTimes);
     }
 
     /**

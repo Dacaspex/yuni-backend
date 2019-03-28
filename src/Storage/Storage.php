@@ -504,64 +504,60 @@ class Storage
 
     /**
      * @param int $canteenId
-     * @param string|null $name
-     * @param string|null $description
-     * @param string|null $building
-     * @param float|null $longitude
-     * @param float|null $latitude
+     * @param string $name
+     * @param string $description
+     * @param OperatingTimes $operatingTimes
      */
     public function updateCanteen(
         int $canteenId,
-        ?string $name,
-        ?string $description,
-        ?string $building,
-        ?float $longitude,
-        ?float $latitude
+        string $name,
+        string $description,
+        OperatingTimes $operatingTimes
     ): void {
         try {
-            $fields = [];
-            if ($name !== null) {
-                $fields[] = "name = :name";
-            }
-            if ($description !== null) {
-                $fields[] = "description = :description";
-            }
-            if ($building !== null) {
-                $fields[] = "building = :building";
-            }
-            if ($longitude !== null) {
-                $fields[] = "longitude = :longitude";
-            }
-            if ($latitude !== null) {
-                $fields[] = "latitude = :latitude";
-            }
+            // Update canteen information
+            $canteenStatement = $this->pdo->prepare(
+                "
+                    UPDATE canteens
+                    SET
+                      name = :name,
+                      description = :description
+                    WHERE id = :id
+                "
+            );
+            $canteenStatement->bindValue(':name', $name);
+            $canteenStatement->bindValue(':description', $description);
+            $canteenStatement->bindValue(':id', $canteenId, PDO::PARAM_INT);
+            $canteenStatement->execute();
 
-            $setClauses = implode(',', $fields);
-            $query      = "UPDATE canteens SET {$setClauses} WHERE id = :id";
-            $statement  = $this->pdo->prepare($query);
-            $statement->bindValue(':id', $canteenId, PDO::PARAM_INT);
+            // Update operating times. First delete old values and then insert new values
+            $deleteStatement = $this->pdo->prepare(
+                "
+                    DELETE FROM operating_times  
+                    WHERE canteen_id = :canteenId
+                "
+            );
+            $deleteStatement->bindValue(':canteenId', $canteenId, PDO::PARAM_INT);
+            $deleteStatement->execute();
 
-            if ($name !== null) {
-                $statement->bindValue(':name', $name);
-            }
-            if ($description !== null) {
-                $statement->bindValue(':description', $description);
-            }
-            if ($building !== null) {
-                $statement->bindValue(':building', $building);
-            }
-            if ($longitude !== null) {
-                $statement->bindValue(':longitude', $longitude);
-            }
-            if ($latitude !== null) {
-                $statement->bindValue(':latitude', $latitude);
-            }
+            $insertStatement = $this->pdo->prepare(
+                "
+                    INSERT INTO operating_times
+                    (canteen_id, day, opening_time, closing_time)
+                    VALUES (:canteenId, :day, :openingTime, :closingTime)
+                "
+            );
 
-            $statement->execute();
-
+            foreach ($operatingTimes->getEntries() as $entry) {
+                $insertStatement->bindValue(':canteenId', $canteenId, PDO::PARAM_INT);
+                $insertStatement->bindValue(':day', $entry['day']);
+                $insertStatement->bindValue(':openingTime', $entry['opening'], PDO::PARAM_INT);
+                $insertStatement->bindValue('closingTime', $entry['closing'], PDO::PARAM_INT);
+                $insertStatement->execute();
+            }
         } catch (PDOException $e) {
             // TODO
-            throw new \RuntimeException($e->getMessage(), 0, $e);
+            throw new \RuntimeException('Could not update canteen', 0, $e);
         }
     }
 
