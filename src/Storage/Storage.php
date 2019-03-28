@@ -40,10 +40,11 @@ class Storage
 
     /**
      * @param int $id
+     * @param int $minutes
      * @return Canteen
      * @throws NotFoundException
      */
-    public function getCanteen(int $id): Canteen
+    public function getCanteen(int $id, int $minutes): Canteen
     {
         try {
             // Get canteen
@@ -71,6 +72,7 @@ class Storage
                 $record['latitude'],
                 $this->getOperatingTimes($id),
                 $this->getCanteenRating($id),
+                $this->getBusyness($id, $minutes),
                 $this->getMenuItems($id)
             );
 
@@ -136,6 +138,33 @@ class Storage
         }
 
         return $record['rating'];
+    }
+
+    /**
+     * @param int $canteenId
+     * @param int $minutes
+     * @return int
+     * @throws PDOException
+     */
+    public function getBusyness(int $canteenId, int $minutes): int
+    {
+        $statement = $this->pdo->prepare(
+            "
+                SELECT COUNT(id) AS count
+                FROM busyness
+                WHERE canteen_id = :canteenId
+                AND created_at BETWEEN DATE_SUB(NOW(), INTERVAL :minutes MINUTE) AND NOW()
+            "
+        );
+        $statement->bindValue(':canteenId', $canteenId, PDO::PARAM_INT);
+        $statement->bindValue(':minutes', $minutes, PDO::PARAM_INT);
+        $statement->execute();
+
+        if ($record = $statement->fetch(PDO::FETCH_ASSOC)) {
+            return $record['count'];
+        }
+
+        return 0;
     }
 
     /**
@@ -212,9 +241,10 @@ class Storage
     }
 
     /**
+     * @param int $minutes
      * @return Canteen[]
      */
-    public function getCanteens(): array
+    public function getCanteens(int $minutes): array
     {
         try {
             $query = $this->pdo->query(
@@ -235,6 +265,7 @@ class Storage
                     $record['latitude'],
                     $this->getOperatingTimes($record['id']),
                     $this->getCanteenRating($record['id']),
+                    $this->getBusyness($record['id'], $minutes),
                     $this->getMenuItems($record['id'])
                 );
             }
@@ -491,6 +522,26 @@ class Storage
             $statement->bindValue(':id', $canteenId, PDO::PARAM_INT);
             $statement->bindValue(':description', $description);
             $statement->bindValue(':rating', $rating);
+            $statement->execute();
+        } catch (PDOException $e) {
+            // TODO
+            throw new \RuntimeException($e->getMessage(), 0, $e);
+        }
+    }
+
+    /**
+     * @param int $canteenId
+     */
+    public function createBusynessEntry(int $canteenId)
+    {
+        try {
+            $statement = $this->pdo->prepare(
+                "
+                    INSERT INTO busyness
+                    (canteen_id) VALUES (:canteenId)
+                "
+            );
+            $statement->bindValue(':canteenId', $canteenId, PDO::PARAM_INT);
             $statement->execute();
         } catch (PDOException $e) {
             // TODO

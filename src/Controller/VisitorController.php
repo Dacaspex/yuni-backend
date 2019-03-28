@@ -16,29 +16,49 @@ use Vcn\Pipette\Json\Exception\CantDecode;
 class VisitorController
 {
     /**
+     * @param Request $request
      * @param VisitorService $service
      * @return Response
      * @Route("/api/canteens")
      */
-    public function getCanteens(VisitorService $service): Response
+    public function getCanteens(Request $request, VisitorService $service): Response
     {
-        $canteens = $service->getCanteens();
+        if (!empty($request->getContent())) {
+            try {
+                $json    = Json::parse($request->getContent());
+                $minutes = $json->field('minutes')->int();
 
-        return new JsonResponse($canteens);
+                return new JsonResponse($service->getCanteens($minutes));
+            } catch (CantDecode | AssertionFailed $e) {
+                return $this->handleParseException($e);
+            }
+        }
+
+        return new JsonResponse($service->getCanteens());
     }
 
     /**
      * @param int $id
+     * @param Request $request
      * @param VisitorService $service
      * @return Response
      * @Route("/api/canteens/{id}")
      */
-    public function getCanteen(int $id, VisitorService $service): Response
+    public function getCanteen(int $id, Request $request, VisitorService $service): Response
     {
         try {
-            return new JsonResponse($service->getCanteen($id));
+            if (!empty($request->getContent())) {
+                $json    = Json::parse($request->getContent());
+                $minutes = $json->field('minutes')->int();
+
+                return new JsonResponse($service->getCanteen($id, $minutes));
+            } else {
+                return new JsonResponse($service->getCanteen($id));
+            }
         } catch (NotFoundException $e) {
             return new JsonResponse([], Response::HTTP_NOT_FOUND);
+        } catch (CantDecode | AssertionFailed $e) {
+            return $this->handleParseException($e);
         }
     }
 
@@ -123,6 +143,19 @@ class VisitorController
         } catch (ReviewTooLongException $e) {
             return new JsonResponse(['message' => 'Review too long'], Response::HTTP_BAD_REQUEST);
         }
+    }
+
+    /**
+     * @param int $id
+     * @param VisitorService $service
+     * @return JsonResponse
+     * @Route("/api/canteens/{id}/busyness", methods={"POST"})
+     */
+    public function createBusynessEntry(int $id, VisitorService $service): Response
+    {
+        $service->createBusynessEntry($id);
+
+        return new JsonResponse();
     }
 
     /**

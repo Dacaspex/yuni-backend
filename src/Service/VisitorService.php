@@ -15,6 +15,10 @@ class VisitorService
      */
     private const REVIEW_CHAR_LIMIT = 200;
     /**
+     * The amount of minutes to take into account for busyness
+     */
+    private const BUSYNESS_TIME_MIN = 15;
+    /**
      * @var Storage
      */
     private $storage;
@@ -29,20 +33,22 @@ class VisitorService
 
     /**
      * @param int $id
+     * @param int $minutes
      * @return Canteen
      * @throws \App\Storage\Exception\NotFoundException
      */
-    public function getCanteen(int $id): Canteen
+    public function getCanteen(int $id, int $minutes = self::BUSYNESS_TIME_MIN): Canteen
     {
-        return $this->storage->getCanteen($id);
+        return $this->storage->getCanteen($id, $minutes);
     }
 
     /**
+     * @param int $minutes
      * @return array
      */
-    public function getCanteens(): array
+    public function getCanteens(int $minutes = self::BUSYNESS_TIME_MIN): array
     {
-        return $this->storage->getCanteens();
+        return $this->storage->getCanteens($minutes);
     }
 
     /**
@@ -99,5 +105,13 @@ class VisitorService
         }
 
         $this->storage->createCanteenReview($canteenId, $rating, $description);
+    }
+
+    /**
+     * @param int $canteenId
+     */
+    public function createBusynessEntry(int $canteenId): void
+    {
+        $this->storage->createBusynessEntry($canteenId);
     }
 }

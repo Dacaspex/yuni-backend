@@ -39,6 +39,10 @@ class Canteen implements JsonSerializable
      */
     private $rating;
     /**
+     * @var int
+     */
+    private $busyness;
+    /**
      * @var MenuItem[]
      */
     private $menuItems;
@@ -52,6 +56,7 @@ class Canteen implements JsonSerializable
      * @param float $latitude
      * @param OperatingTimes $operatingTimes
      * @param float|null $rating
+     * @param int $busyness
      * @param MenuItem[] $menuItems
      */
     public function __construct(
@@ -63,6 +68,7 @@ class Canteen implements JsonSerializable
         float $latitude,
         OperatingTimes $operatingTimes,
         ?float $rating,
+        int $busyness,
         array $menuItems
     ) {
         $this->id             = $id;
@@ -73,6 +79,7 @@ class Canteen implements JsonSerializable
         $this->latitude       = $latitude;
         $this->operatingTimes = $operatingTimes;
         $this->rating         = $rating;
+        $this->busyness       = $busyness;
         $this->menuItems      = $menuItems;
     }
 
@@ -90,6 +97,7 @@ class Canteen implements JsonSerializable
             'latitude'        => $this->latitude,
             'operating_times' => $this->operatingTimes,
             'rating'          => $this->rating,
+            'busyness'        => $this->busyness,
             'menu_items'      => $this->menuItems,
         ];
     }
