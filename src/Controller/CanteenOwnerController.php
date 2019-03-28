@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Auth\TokenValidator;
 use App\Models\Availability;
+use App\Models\Category;
 use App\Models\OperatingTimes;
 use App\Models\Schedule;
 use App\Service\CanteenOwnerService;
@@ -31,6 +32,70 @@ class CanteenOwnerController
             return new JsonResponse(['authenticated' => true]);
         } else {
             return new JsonResponse(['authenticated' => false]);
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param TokenValidator $tokenValidator
+     * @param CanteenOwnerService $service
+     * @return Response
+     * @Route("/api/menu_items", methods={"POST"})
+     */
+    public function addNewMenuItem(
+        Request $request,
+        TokenValidator $tokenValidator,
+        CanteenOwnerService $service
+    ): Response {
+        if (!$tokenValidator->check($request)) {
+            return $this->handleUnAuthorised();
+        }
+
+        try {
+            $json = Json::parse($request->getContent());
+
+            $name        = $json->field('name')->string();
+            $description = $json->field('description')->string();
+            $category    = Category::byName($json->field('category')->string());
+
+            $service->addNewMenuItem($name, $description, $category);
+
+            return new JsonResponse();
+        } catch (CantDecode | AssertionFailed | InvalidInstance $e) {
+            return $this->handleParseException($e);
+        }
+    }
+
+    /**
+     * @param int $id
+     * @param Request $request
+     * @param TokenValidator $tokenValidator
+     * @param CanteenOwnerService $service
+     * @return Response
+     * @Route("/api/menu_items/{id}", methods={"PATCH"})
+     */
+    public function updateMenuItem(
+        int $id,
+        Request $request,
+        TokenValidator $tokenValidator,
+        CanteenOwnerService $service
+    ): Response {
+        if (!$tokenValidator->check($request)) {
+            return $this->handleUnAuthorised();
+        }
+
+        try {
+            $json = Json::parse($request->getContent());
+
+            $name        = $json->field('name')->string();
+            $description = $json->field('description')->string();
+            $category    = Category::byName($json->field('category')->string());
+
+            $service->updateMenuItem($id, $name, $description, $category);
+
+            return new JsonResponse();
+        } catch (CantDecode | AssertionFailed | InvalidInstance $e) {
+            return $this->handleParseException($e);
         }
     }
 

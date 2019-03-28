@@ -562,6 +562,33 @@ class Storage
     }
 
     /**
+     * @param int $menuItemId
+     * @param string $name
+     * @param string $description
+     * @param Category $category
+     */
+    public function updateMenuItem(int $menuItemId, string $name, string $description, Category $category): void
+    {
+        try {
+            $statement = $this->pdo->prepare(
+                "
+                    UPDATE menu_items
+                    SET name = :name, description = :description, category = :category
+                    WHERE id = :id
+                "
+            );
+            $statement->bindValue(':name', $name);
+            $statement->bindValue(':description', $description);
+            $statement->bindValue(':category', $category->getName());
+            $statement->bindValue(':id', $menuItemId, PDO::PARAM_INT);
+            $statement->execute();
+        } catch (PDOException $e) {
+            // TODO
+            throw new \RuntimeException($e->getMessage(), 0, $e);
+        }
+    }
+
+    /**
      * @param int $menuId
      * @param string $schedule
      */

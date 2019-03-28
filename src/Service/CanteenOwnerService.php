@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Models\Availability;
+use App\Models\Category;
 use App\Models\OperatingTimes;
 use App\Models\Schedule;
 use App\Storage\Storage;
@@ -20,6 +21,27 @@ class CanteenOwnerService
     public function __construct(Storage $storage)
     {
         $this->storage = $storage;
+    }
+
+    /**
+     * @param string $name
+     * @param string $description
+     * @param Category $category
+     */
+    public function addNewMenuItem(string $name, string $description, Category $category): void
+    {
+        $this->storage->createMenuItem($name, $description, $category);
+    }
+
+    /**
+     * @param int $menuItemId
+     * @param string $name
+     * @param string $description
+     * @param Category $category
+     */
+    public function updateMenuItem(int $menuItemId, string $name, string $description, Category $category): void
+    {
+        $this->storage->updateMenuItem($menuItemId, $name, $description, $category);
     }
 
     /**
