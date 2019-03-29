@@ -432,6 +432,68 @@ class Storage
     /**
      * @param string $name
      * @param string $description
+     * @param string $building
+     * @param float $longitude
+     * @param float $latitude
+     * @param OperatingTimes $operatingTimes
+     */
+    public function createCanteen(
+        string $name,
+        string $description,
+        string $building,
+        float $longitude,
+        float $latitude,
+        OperatingTimes $operatingTimes
+    ): void {
+        try {
+            $statement = $this->pdo->prepare(
+                "
+                    INSERT INTO canteens  
+                    (name, description, building, latitude, longitude) 
+                    VALUES (:name, :description, :building, :latitude, :longitude)
+                "
+            );
+            $statement->bindValue(':name', $name);
+            $statement->bindValue(':description', $description);
+            $statement->bindValue(':building', $building);
+            $statement->bindValue(':latitude', $latitude);
+            $statement->bindValue(':longitude', $longitude);
+            $statement->execute();
+
+            $this->createOperatingTimes($this->pdo->lastInsertId(), $operatingTimes);
+        } catch (PDOException $e) {
+            // TODO
+            throw new \RuntimeException($e->getMessage(), 0, $e);
+        }
+    }
+
+    /**
+     * @param int $canteenId
+     * @param OperatingTimes $operatingTimes
+     * @throws PDOException
+     */
+    public function createOperatingTimes(int $canteenId, OperatingTimes $operatingTimes): void
+    {
+        $statement = $this->pdo->prepare(
+            "
+                    INSERT INTO operating_times
+                    (canteen_id, day, opening_time, closing_time)
+                    VALUES (:canteenId, :day, :openingTime, :closingTime)
+                "
+        );
+
+        foreach ($operatingTimes->getEntries() as $entry) {
+            $statement->bindValue(':canteenId', $canteenId, PDO::PARAM_INT);
+            $statement->bindValue(':day', $entry['day']);
+            $statement->bindValue(':openingTime', $entry['opening'], PDO::PARAM_INT);
+            $statement->bindValue('closingTime', $entry['closing'], PDO::PARAM_INT);
+            $statement->execute();
+        }
+    }
+
+    /**
+     * @param string $name
+     * @param string $description
      * @param Category $category
      */
     public function createMenuItem(string $name, string $description, Category $category): void
@@ -591,21 +653,7 @@ class Storage
             $deleteStatement->bindValue(':canteenId', $canteenId, PDO::PARAM_INT);
             $deleteStatement->execute();
 
-            $insertStatement = $this->pdo->prepare(
-                "
-                    INSERT INTO operating_times
-                    (canteen_id, day, opening_time, closing_time)
-                    VALUES (:canteenId, :day, :openingTime, :closingTime)
-                "
-            );
-
-            foreach ($operatingTimes->getEntries() as $entry) {
-                $insertStatement->bindValue(':canteenId', $canteenId, PDO::PARAM_INT);
-                $insertStatement->bindValue(':day', $entry['day']);
-                $insertStatement->bindValue(':openingTime', $entry['opening'], PDO::PARAM_INT);
-                $insertStatement->bindValue('closingTime', $entry['closing'], PDO::PARAM_INT);
-                $insertStatement->execute();
-            }
+            $this->createOperatingTimes($canteenId, $operatingTimes);
         } catch (PDOException $e) {
             // TODO
             throw new \RuntimeException('Could not update canteen', 0, $e);
@@ -711,6 +759,28 @@ class Storage
             $statement->execute();
         } catch (PDOException $e) {
             throw new \RuntimeException('Could not remove item from menu', 0, $e);
+        }
+    }
+
+    /**
+     * Truncates all tables
+     */
+    public function truncateAll(): void
+    {
+        try {
+            $this->pdo->query(
+                "
+                    TRUNCATE canteens;
+                    TRUNCATE menu_items;
+                    TRUNCATE map_canteen_menu_item;
+                    TRUNCATE canteen_reviews;
+                    TRUNCATE menu_item_reviews;
+                    TRUNCATE busyness;
+                "
+            );
+        } catch (PDOException $e) {
+            // TODO
+            throw new \RuntimeException($e->getMessage(), 0, $e);
         }
     }
 
