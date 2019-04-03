@@ -84,16 +84,16 @@ class SeedCommand extends Command
                 'name'            => 'Auditorium Canteen',
                 'description'     => 'Description for Auditorium canteen',
                 'building'        => 'auditorium',
-                'longitude'       => 0.0,
-                'latitude'        => 0.0,
+                'longitude'       => 5.48401,
+                'latitude'        => 51.448015,
                 'operating_times' => $operatingTimes
             ],
             [
                 'name'            => 'Metaforum Canteen',
                 'description'     => 'Description for Metaforum canteen',
                 'building'        => 'metaforum',
-                'longitude'       => 0.0,
-                'latitude'        => 0.0,
+                'longitude'       => 5.487152,
+                'latitude'        => 51.447453,
                 'operating_times' => $operatingTimes
             ],
             [
