@@ -251,6 +251,29 @@ class CanteenOwnerController
     }
 
     /**
+     * @param int $id
+     * @param Request $request
+     * @param TokenValidator $tokenValidator
+     * @param CanteenOwnerService $service
+     * @return Response
+     * @Route("/api/menu_items/{id}", methods={"DELETE"})
+     */
+    public function removeMenuItem(
+        int $id,
+        Request $request,
+        TokenValidator $tokenValidator,
+        CanteenOwnerService $service
+    ): Response {
+        if (!$tokenValidator->check($request)) {
+            return $this->handleUnAuthorised();
+        }
+
+        $service->removeMenuItem($id);
+
+        return new JsonResponse();
+    }
+
+    /**
      * @return Response
      */
     private function handleUnAuthorised(): Response

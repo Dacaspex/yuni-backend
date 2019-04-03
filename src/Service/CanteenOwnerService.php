@@ -102,4 +102,12 @@ class CanteenOwnerService
     {
         $this->storage->updateMenuItemAvailability($menuId, $availability);
     }
+
+    /**
+     * @param int $id
+     */
+    public function removeMenuItem(int $id): void
+    {
+        $this->storage->removeMenuItem($id);
+    }
 }

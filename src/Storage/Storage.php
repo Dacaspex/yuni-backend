@@ -763,6 +763,47 @@ class Storage
     }
 
     /**
+     * @param int $id
+     */
+    public function removeMenuItem(int $id): void
+    {
+        try {
+            // Canteen menu item map
+            $mapStatement = $this->pdo->prepare(
+                "
+                    DELETE FROM map_canteen_menu_item
+                    WHERE menu_item_id = :id
+                "
+            );
+            $mapStatement->bindValue(':id', $id, PDO::PARAM_INT);
+            $mapStatement->execute();
+
+            // Menu item reviews
+            $reviewStatement = $this->pdo->prepare(
+                "
+                    DELETE FROM menu_item_reviews  
+                    WHERE menu_item_id = :id
+                "
+            );
+            $reviewStatement->bindValue(':id', $id, PDO::PARAM_INT);
+            $reviewStatement->execute();
+
+            // Menu item
+            $statement = $this->pdo->prepare(
+                "
+                    DELETE FROM menu_items
+                    WHERE id = :id
+                "
+            );
+            $statement->bindValue(':id', $id, PDO::PARAM_INT);
+            $statement->execute();
+        } catch (PDOException $e) {
+            // TODO
+            throw new \RuntimeException($e->getMessage(), 0, $e);
+        }
+    }
+
+    /**
      * Truncates all tables
      */
     public function truncateAll(): void
